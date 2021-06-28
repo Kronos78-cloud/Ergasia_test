@@ -1,0 +1,4 @@
+---
+http_conf: owncloud
+http_port: "80"
+document_root: /var/www/owncloud/

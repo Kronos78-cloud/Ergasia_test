@@ -1,0 +1,4 @@
+---
+http_conf: freedom
+http_port: "80"
+document_root: /var/www/freedom/public/

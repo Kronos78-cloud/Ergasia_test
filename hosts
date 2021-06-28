@@ -1,0 +1,8 @@
+[freedom]
+35.187.79.237
+
+[owncloud]
+35.205.22.12
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3

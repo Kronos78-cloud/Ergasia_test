@@ -1,0 +1,24 @@
+---
+- hosts: freedom
+  become: true
+  roles:
+    - { role: setup }
+
+    - { role: mariadb1 }
+
+    - { role: php1 }
+
+    - { role: nginx1 }
+
+    - { role: composer }
+
+- hosts: owncloud
+  become: true
+  roles:
+    - { role: setup }
+
+    - { role: mariadb2 }
+
+    - { role: php2 }
+
+    - { role: nginx2 }

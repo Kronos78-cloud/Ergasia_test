@@ -1,0 +1,79 @@
+---
+- hosts: freedom
+  become: true
+  tasks:
+    - name: Make sure the remote app root exists and has the right permissions
+      file:
+        path: "{{ remote_www_root }}/{{ freedom_root_dir }}"
+        state: directory
+        mode: '0775'
+        owner: "{{ remote_user }}"
+        group: "{{ remote_user }}"
+
+    - name: Rsync application files to the remote server
+      synchronize:
+        src: "application/{{ freedom_root_dir }}"
+        dest: "{{ remote_www_root }}"
+        rsync_opts:
+          - "--no-motd"
+          - "--exclude=.git,vendor,tests,storage/logs/*,storage/framework/sessions/*,storage/framework/cache/*"
+
+    - name: install Access Control Lists (ACL) package
+      apt:
+        name: acl
+        state: present
+    
+    - name: Set up additional directory permissions for www-data user on storage folder
+      acl:
+        path: "{{ remote_www_root }}/{{ freedom_root_dir }}/storage/"
+        entry: group:www-data:rwX
+        recursive: yes
+        state: present
+
+    - name: Set up additional directory permissions for www-data user on bootstrap/cache folder
+      acl:
+        path: "{{ remote_www_root }}/{{ freedom_root_dir }}/bootstrap/cache/"
+        entry: group:www-data:rwX
+        recursive: yes
+        state: present
+
+    - name: Set up .env file
+      template:
+        src: laravel-env.j2
+        dest: "{{ remote_www_root }}/{{ freedom_root_dir }}/.env"
+
+    - name: Install Dependencies with Composer
+      become: false
+      composer:
+        command: update
+        working_dir: "{{ remote_www_root }}/{{ freedom_root_dir }}"
+      tags: [ 'composer:update' ]
+
+    - name: Generate app key
+      command: "/usr/bin/php {{ remote_www_root }}/{{ freedom_root_dir }}/artisan key:generate"
+      tags: [ 'laravel', 'artisan:key' ]
+
+    - name: Set up app storage link
+      command: "/usr/bin/php {{ remote_www_root }}/{{ freedom_root_dir }}/artisan storage:link"
+      tags: [ 'laravel', 'artisan:storage' ]
+
+    - name: Run Migrations + Seeders
+      command: "/usr/bin/php {{ remote_www_root }}/{{ freedom_root_dir }}/artisan migrate --seed"
+      tags: [ 'laravel', 'artisan:migrate' ]
+
+- hosts: owncloud
+  become: true
+  tasks:
+    - name: Rsync application files to the remote server
+      synchronize:
+        src: "application/{{ owncloud_root_dir }}"
+        dest: "{{ remote_www_root }}"
+        rsync_opts:
+          - "--no-motd"
+
+    - name: Make sure the remote app root exists and has the right permissions
+      file:
+        path: "{{ remote_www_root }}/{{ owncloud_root_dir }}"
+        state: directory
+        mode: '0775'
+        owner: www-data

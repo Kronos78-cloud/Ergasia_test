@@ -1,0 +1,6 @@
+---
+php_packages: [ "php-common", "php-gmp", "php-curl", "php-intl", "php-mbstring", "php-xmlrpc", "php-gd", "php-xml", "php-cli", "php-zip" ]
+php_file_uploads: "On"
+php_upload_max_filesize: "64M"
+php_max_file_uploads: "20"
+php_post_max_size: "32M"

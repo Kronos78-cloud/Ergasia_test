@@ -1,0 +1,31 @@
+---
+# Initial Server Setup
+remote_user: nick # current user on your local machine
+
+# MySQL Setup
+mysql_root_password: nikos12345 # set your own password
+mysql_freedom_db: freedom
+mysql_freedom_user: freedomUser # set your own username
+mysql_owncloud_db: owncloud
+mysql_owncloud_user: owncloudUser # set your own username
+mysql_app_pass: nikos1234 # set your own password
+
+# Web Server Setup
+http_host1: 35.187.79.237 # the IP address of FREEDOM app server
+http_host2: 35.205.22.12 # the IP address of OWNCLOUD app server
+remote_www_root: /var/www
+freedom_root_dir: freedom
+owncloud_root_dir: owncloud
+document_root1: "{{ remote_www_root }}/{{ freedom_root_dir }}/public/"
+document_root2: "{{ remote_www_root }}/{{ owncloud_root_dir }}/"
+
+# Laravel Env Variables
+app_name: Operation_Freedom
+app_env: dev
+app_debug: true
+app_url: "http://{{ http_host1 }}"
+db_host: localhost
+db_port: 3306
+db_database: "{{ mysql_freedom_db }}"
+db_user: "{{ mysql_freedom_user }}"
+db_pass: "{{ mysql_app_pass }}"
